@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Sales Trend Analysis Dashboard</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div style="background:#111c33;padding:10px;color:#9bd6ff;font-size:14px;">
+System Status: <b style="color:#4CAF50;">Online</b> |
+Model: <b>Q-Learning</b> |
+Data Source: <b>Uploaded CSV Dataset</b>
+</div>
+
+<h1>📊 Sales Trend Analysis Dashboard</h1>
+
+<p style="margin-top:-10px; color:#64748b; font-size:18px;">
+AI-Powered Sales Analytics using Q-Learning Reinforcement Learning
+</p>
+
+<div class="controls">
+
+<label for="region">Region:</label>
+
+<select id="region">
+<option value="All">All Regions</option>
+<option value="West">West</option>
+<option value="East">East</option>
+<option value="Central">Central</option>
+<option value="South">South</option>
+</select>
+
+<label for="csvFile">Upload Dataset (CSV):</label>
+
+<input type="file" id="csvFile" accept=".csv">
+
+<button id="runBtn" onclick="runAnalysis()" disabled>Run Analysis</button>
+
+</div>
+
+<div id="fileName" style="margin-top:10px;color:#2563eb;font-weight:bold;"></div>
+
+<div id="lastUpdated" style="margin-top:10px; font-size:14px; color:#475569;">
+Last Updated: --
+</div>
+
+<div id="loading" style="display:none;">
+<h3>Running AI Analysis...</h3>
+<div class="spinner"></div>
+</div>
+
+<div class="kpi">
+
+<div class="card">
+<h3>💰 Total Sales</h3>
+<p id="sales">--</p>
+</div>
+
+<div class="card">
+<h3>📈 Total Profit</h3>
+<p id="profit">--</p>
+</div>
+
+<div class="card">
+<h3>🛒 Total Orders</h3>
+<p id="orders">--</p>
+</div>
+
+<div class="card">
+<h3>🤖 Predicted Sales</h3>
+<p id="prediction">--</p>
+</div>
+
+</div>
+
+<div style="margin-top:15px; font-size:16px; color:#2563eb;">
+AI Model Used: Q-Learning (Reinforcement Learning)
+</div>
+
+<div class="charts">
+
+<div class="chartCard">
+<h3>Monthly Sales Trend</h3>
+<canvas id="salesChart"></canvas>
+</div>
+
+<div class="chartCard">
+<h3>Sales vs Profit</h3>
+<canvas id="salesProfitChart"></canvas>
+</div>
+
+<div class="chartCard">
+<h3>Sales Distribution</h3>
+<canvas id="distributionChart"></canvas>
+</div>
+
+<div class="chartCard">
+<h3>Region Sales</h3>
+<canvas id="regionChart"></canvas>
+</div>
+
+<div class="chartCard">
+<h3>Category Sales</h3>
+<canvas id="categoryChart"></canvas>
+</div>
+
+</div>
+
+<div class="predictionInsight">
+
+<h2>Reinforcement Learning Prediction Insight</h2>
+
+<p>
+This prediction is generated using the <b>Q-Learning Reinforcement Learning model</b>.
+The model analyzes historical sales patterns and estimates future sales demand.
+</p>
+
+<h3>Predicted Sales Value</h3>
+
+<div id="predictedValue">$0</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
