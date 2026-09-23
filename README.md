@@ -86,3 +86,7 @@ CSE Student | Data Analytics Enthusiast
 
 linkedin profile
 https://www.linkedin.com/in/azhar-mohammad69
+
+
+output :
+https://www.linkedin.com/posts/azhar-mohammad69_dataanalytics-flask-python-activity-7467890738765316096-wlAY?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAGAxCjUBUHiKPhkc7HaMutB2iUKUAkaxIbA
