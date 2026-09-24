@@ -32,7 +32,7 @@ AI-Powered Sales Analytics using Q-Learning Reinforcement Learning
 
 <label for="region">Region:</label>
 
-<select id="region">
+<select id="region" onchange="runAnalysis()">
 <option value="All">All Regions</option>
 <option value="West">West</option>
 <option value="East">East</option>
@@ -44,7 +44,7 @@ AI-Powered Sales Analytics using Q-Learning Reinforcement Learning
 
 <input type="file" id="csvFile" accept=".csv">
 
-<button id="runBtn" onclick="runAnalysis()" disabled>Run Analysis</button>
+<button id="runBtn" onclick="runAnalysis()">Run Analysis</button>
 
 </div>
 
@@ -100,7 +100,7 @@ AI Model Used: Q-Learning (Reinforcement Learning)
 </div>
 
 <div class="chartCard">
-<h3>Sales Distribution</h3>
+<h3>Top Sub-Categories</h3>
 <canvas id="distributionChart"></canvas>
 </div>
 
