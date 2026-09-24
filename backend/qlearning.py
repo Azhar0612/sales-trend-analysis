@@ -1,6 +1,13 @@
 import numpy as np
 
+
 def q_learning_prediction(sales):
+
+    if not sales or len(sales) == 0:
+        return 0.0
+
+    if len(sales) == 1:
+        return round(float(sales[0]), 2)
 
     states = len(sales)
     actions = 2
@@ -13,7 +20,7 @@ def q_learning_prediction(sales):
 
     for episode in range(500):
 
-        state = np.random.randint(0, states-1)
+        state = np.random.randint(0, states)
 
         for step in range(10):
 
@@ -34,4 +41,4 @@ def q_learning_prediction(sales):
 
     prediction = np.mean(Q)
 
-    return round(prediction, 2)
+    return round(float(prediction), 2)

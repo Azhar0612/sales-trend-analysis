@@ -10,9 +10,10 @@ CORS(app)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATABASE = os.path.join(BASE_DIR, "sales.db")
+DEFAULT_CSV = os.path.join(BASE_DIR, "superstore_sales.csv")
 
 
-def ensure_table():
+def init_db_with_default_data():
 
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
@@ -41,8 +42,20 @@ def ensure_table():
         Profit REAL
     )
     """)
-
     conn.commit()
+
+    cursor.execute("SELECT COUNT(*) FROM sales")
+    count = cursor.fetchone()[0]
+
+    if count == 0 and os.path.exists(DEFAULT_CSV):
+        try:
+            df = pd.read_csv(DEFAULT_CSV, encoding="latin1", sep=",", engine="python")
+            df.columns = df.columns.str.replace(" ", "_")
+            df.to_sql("sales", conn, if_exists="replace", index=False)
+            print("Successfully initialized database with superstore_sales.csv")
+        except Exception as e:
+            print("Failed to auto-populate database:", e)
+
     conn.close()
 
 
@@ -62,11 +75,10 @@ def analyze():
 
         region = request.form.get("region", "All")
 
-        if "file" in request.files:
+        if "file" in request.files and request.files["file"].filename != "":
 
             file = request.files["file"]
 
-            # 🔥 FIXED CSV READING
             df = pd.read_csv(file, encoding="latin1", sep=",", engine="python")
 
             df.columns = df.columns.str.replace(" ", "_")
@@ -78,30 +90,40 @@ def analyze():
         df = get_data()
 
         if df.empty:
-            return jsonify({"error": "Database empty"}), 400
+            return jsonify({"error": "Database is empty. Please upload a CSV dataset."}), 400
 
         df.columns = df.columns.str.replace(" ", "_")
 
         if region != "All":
             df = df[df["Region"] == region]
 
+        if df.empty:
+            return jsonify({"error": f"No data available for region '{region}'"}), 400
+
         total_sales = float(df["Sales"].sum())
         total_profit = float(df["Profit"].sum())
         total_orders = int(len(df))
 
-        df["Order_Date"] = pd.to_datetime(df["Order_Date"], errors="coerce")
+        df["Order_Date"] = pd.to_datetime(df["Order_Date"], format="mixed", errors="coerce")
+        df = df.dropna(subset=["Order_Date"])
 
-        df["Month"] = df["Order_Date"].dt.month
+        df["Month"] = df["Order_Date"].dt.month.astype(int)
 
-        monthly_sales = df.groupby("Month")["Sales"].sum()
+        monthly_sales = df.groupby("Month")["Sales"].sum().sort_index()
+        monthly_profit = df.groupby("Month")["Profit"].sum().sort_index()
 
-        months = monthly_sales.index.tolist()
-        sales_data = monthly_sales.values.tolist()
+        months = [int(m) for m in monthly_sales.index.tolist()]
+        sales_data = [float(s) for s in monthly_sales.values.tolist()]
+        profit_data = [float(p) for p in monthly_profit.values.tolist()]
 
-        category_sales = df.groupby("Category")["Sales"].sum().to_dict()
-        region_sales = df.groupby("Region")["Sales"].sum().to_dict()
+        category_sales = {str(k): float(v) for k, v in df.groupby("Category")["Sales"].sum().to_dict().items()}
+        region_sales = {str(k): float(v) for k, v in df.groupby("Region")["Sales"].sum().to_dict().items()}
 
-        profit_data = df["Profit"].tolist()
+        sub_cat_col = "Sub_Category" if "Sub_Category" in df.columns else "Sub-Category"
+        if sub_cat_col in df.columns:
+            sub_category_sales = {str(k): float(v) for k, v in df.groupby(sub_cat_col)["Sales"].sum().sort_values(ascending=False).head(10).to_dict().items()}
+        else:
+            sub_category_sales = {}
 
         prediction = q_learning_prediction(sales_data)
 
@@ -114,6 +136,7 @@ def analyze():
             "total_orders": total_orders,
             "category_sales": category_sales,
             "region_sales": region_sales,
+            "sub_category_sales": sub_category_sales,
             "prediction": prediction
         })
 
@@ -126,8 +149,8 @@ def analyze():
 
 if __name__ == "__main__":
 
-    ensure_table()
+    init_db_with_default_data()
 
     print("Backend running at http://127.0.0.1:5000")
 
-    app.run(debug=True)
+    app.run(debug=True)

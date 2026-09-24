@@ -1,8 +1,12 @@
 import pandas as pd
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CSV_PATH = os.path.join(BASE_DIR, "superstore_sales.csv")
 
 def analyze_sales(region=None):
 
-    df = pd.read_csv("../superstore_sales.csv", encoding="latin1")
+    df = pd.read_csv(CSV_PATH, encoding="latin1")
 
     df['Order Date'] = pd.to_datetime(df['Order Date'], format='mixed', errors='coerce')
 
@@ -32,4 +36,4 @@ def analyze_sales(region=None):
         region_sales.to_dict(),
         category_sales.to_dict(),
         profit_data
-    )
+    )
